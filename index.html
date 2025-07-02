@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🔥 My RSS Reader - Indeed Jobs</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      padding: 2rem;
+      color: #333;
+    }
+    h1 {
+      color: #0073b1;
+    }
+    .job {
+      background: #fff;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .job a {
+      text-decoration: none;
+      color: #0073b1;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧲 Latest Jobs - Indeed Feed</h1>
+  <div id="feed">Loading jobs...⏳</div>
+
+  <script>
+    const feedUrl = 'https://rss.indeed.com/rss?q=software+developer&l=hyderabad';
+    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(feedUrl);
+
+    fetch(proxyUrl)
+      .then(response => response.json())
+      .then(data => {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "text/xml");
+        const items = xml.querySelectorAll("item");
+        const container = document.getElementById("feed");
+        container.innerHTML = "";
+
+        items.forEach(item => {
+          const title = item.querySelector("title").textContent;
+          const link = item.querySelector("link").textContent;
+          const desc = item.querySelector("description").textContent;
+
+          const jobDiv = document.createElement("div");
+          jobDiv.className = "job";
+          jobDiv.innerHTML = `<a href="${link}" target="_blank">${title}</a><p>${desc}</p>`;
+          container.appendChild(jobDiv);
+        });
+      })
+      .catch(err => {
+        document.getElementById("feed").innerText = "😵 Oops! Failed to load jobs.";
+        console.error(err);
+      });
+  </script>
+
+</body>
+</html>
